@@ -1,7 +1,7 @@
 let fetch = require("node-fetch")
 let cheerio = require("cheerio")
 let Code = require("./Code.js")
-let collection = new (require("../../Collection/childrenCache").RaidenCol)
+let collection = new (require("../@Collections/Collection/childrenCache").RaidenCol)
 let fs = require("fs")
 class BinManager {
     constructor(access, refresh) {
@@ -21,7 +21,7 @@ class BinManager {
             fetch(`https://sourceb.in/${key}`, {
                 method: "GET"
             }).then(res => {
-                if(res.status !== 200) return rej(res.status)
+                if(res.status !== 200) return rej(`Error. Status: ${res.status} (${res.statusText})`)
                 res.text().then(async data => {
                     let $ = cheerio.load(data)
                     let result = []
@@ -37,7 +37,7 @@ class BinManager {
                     let description = $(".description > .inline-editable").find("p").text()
                     let highlight = $(".info > .language").text().trim()
                     let code = await fetch(`https://cdn.sourceb.in/bins/${key}/0`, { method: "GET"})
-                    if(code.status !== 200) return rej(`Code error. Status: ${code.status}`)
+                    if(code.status !== 200) return rej(`Code error.  Status: ${code.status} (${code.statusText})`)
                     let codeData = await code.text()
                     Object.assign(result[0], { 
                         title: title,
@@ -66,7 +66,7 @@ class BinManager {
                     "cookie": `access_token=${this.constructor.ACCESS}; refresh_token=${this.constructor.REFRESH}`
                 }
             }).then(res => {
-                if(res.status !== 200) return Promise.reject(`Error. Status: ${res.status}`)
+                if(res.status !== 200) return Promise.reject(`Error. Status: ${res.status} (${res.statusText})`)
                 res.json().then(async data => {
                     if(options?.limit) {
                         let slicer = data.slice(0, options?.limit)
@@ -96,7 +96,14 @@ class BinManager {
     create(code, options = { description: "", title: "", languageId: ""}) {
         if(!code) return Promise.reject("Please specify a code")
         let languageChecker = undefined
-        if(typeof options?.languageId === "string") languageChecker = Object.keys(this.constructor.LANGUAGE).filter(value => value === options?.languageId)
+        if(typeof options?.languageId === "string") {
+            languageChecker = Object.keys(this.constructor.LANGUAGE).filter(value => value === options?.languageId)
+            if(languageChecker?.length <= 0) return Promise.reject(`Invalid Language, or does not exist`)
+        }
+        if(typeof options?.languageId === "number") {
+            let values = Object.values(this.constructor.LANGUAGE).filter(value => value === options?.languageId)
+            if(values?.length <= 0) return Promise.reject("Invalid Language, or does not exist")
+        }
         let description = options?.description ?? ""
         let title = options?.title ?? ""
         let language = options?.languageId ? (this.constructor.LANGUAGE[languageChecker?.[0]] ?? options?.languageId) : 372
@@ -117,7 +124,7 @@ class BinManager {
                     }]
                 })
             }).then(res => {
-                if(res.status !== 200) return Promise.reject(`Code error. Status: ${res.status}`)
+                if(res.status !== 200) return Promise.reject(`Code error.  Status: ${res.status} (${res.statusText})`)
                 res.json().then(data => {
                     this.fetch(data.key).then(code => {
                         resolve(code)
@@ -137,7 +144,7 @@ class BinManager {
                     "cookie": `access_token=${this.constructor.ACCESS}; refresh_token=${this.constructor.REFRESH}`
                 }
             }).then(res => {
-                if(res.status !== 200) return rej(`Error. Status: ${res.status}`)
+                if(res.status !== 200) return rej(`Error. Status: ${res.status} (${res.statusText})`)
                 res.json().then(data => {
                     resolve(data.success)
                 })

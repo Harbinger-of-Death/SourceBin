@@ -1,5 +1,5 @@
 import Code from "./Code.js"
-import { RaidenCol } from "../Typings/collection"
+import { RaidenCol } from "../@Collections/Typings/collection"
 interface Options {
     /**
      * The title for this bin
@@ -36,7 +36,8 @@ export default class BinManager {
      */
     public create(code: string, options: Options): Promise<Code>
     /**
-     * Your bins
+     * Your bins. Experimental right now as sourcebin has no authorization method as of yet though you can authorize using your access token and refresh
+     * but that is it and those token changes, they aren't static
      */
     public me(): Promise<RaidenCol<string, Code>>
     public me<T = undefined>(options: OptionsMe<T>): T extends undefined ? Promise<RaidenCol<string, Code>> : Promise<Code>
