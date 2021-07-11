@@ -33,10 +33,12 @@ class Base {
                 if(res.status !== 200) return rej(`Error. Status: ${res.status} (${res.statusText})`)
                 res.text().then(data => {
                     let $ = cheerio.load(data)
+                    let avatar = $(".about > .avatar").attr().src
                     let username = $(".info > .username").text()?.replace(/[\n\r]+/gim, "")
                     let createdAt = $(".stats").find("div").first().text()?.trim()
                     let fileCount = $(".stats").find("div").text()?.split(/[\n\r]+/gim).filter(item => item)
                     resolve(new Info({
+                        avatar: avatar ?? null,
                         username: username,
                         createdAt: createdAt,
                         fileCount: fileCount?.[1] ?? 0

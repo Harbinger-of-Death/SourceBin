@@ -3,6 +3,10 @@ class Info {
         /**
          * @private
          */
+        this._avatar = data?.avatar
+        /**
+         * @private
+         */
         this._username = data?.username ?? null
         this.createdAt = /((t|T)oday)/gim.exec(data?.createdAt)?.[0] ? new Date() : data?.createdAt ? new Date(data.createdAt) : null
         /**
