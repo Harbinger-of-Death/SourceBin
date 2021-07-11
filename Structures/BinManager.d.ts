@@ -13,6 +13,10 @@ interface Options {
      * The language id for this bin
      */
     languageId: number | "1C Enterprise" | "4D" | "ACTIONSCRIPT" | "ASSEMBLY" | "C#" | "C++" | "PYTHON" | "JAVASCRIPT" | "TEXT"
+    /**
+     * The filename for this bin
+     */
+    filename: string
 }
 
 interface OptionsMe<T> {

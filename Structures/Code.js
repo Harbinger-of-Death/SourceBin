@@ -44,7 +44,11 @@ class Code {
         /**
          * @private
          */
-        this._code = data?.code
+         this._filename = data?.filename && data?.filename !== "untitled" ? data?.filename : data.filename === "untitled" ? null : null
+        /**
+         * @private
+         */
+        this._code = data?.code ? data.code.trim() : null
     }
     /**
      * The url for this bin
@@ -101,6 +105,13 @@ class Code {
      */
     get id() {
         return this._id
+    }
+    /**
+     * The file name for this bin
+     * @returns {string}
+     */
+    get filename() {
+        return this._filename
     }
     /**
      * Deletes this bin. true if successful.

@@ -27,7 +27,7 @@ class BinManager {
                     let result = []
                     $(".stats").each(function() {
                         let today = $(this).find("p").first().text()
-                        let view = /\d\s((v|V)iew(s)?)/gim.exec($(this).find("p").text())?.[0]
+                        let view = /\d+\s((v|V)iew(s)?)/gim.exec($(this).find("p").text())?.[0]
                         result.push({
                             today: today,
                             view: view
@@ -36,6 +36,7 @@ class BinManager {
                     let title = $(".title > .inline-editable").find("h1").text()
                     let description = $(".description > .inline-editable").find("p").text()
                     let highlight = $(".info > .language").text().trim()
+                    let filename = $(".toolbar > .info").text().trim().split(/ +/gim)
                     let code = await fetch(`https://cdn.sourceb.in/bins/${key}/0`, { method: "GET"})
                     if(code.status !== 200) return rej(`Code error.  Status: ${code.status} (${code.statusText})`)
                     let codeData = await code.text()
@@ -43,6 +44,7 @@ class BinManager {
                         title: title,
                         description: description,
                         highlight: highlight,
+                        filename: filename?.[1]?.trim(),
                         code: codeData
                     })
                     for(let results of result) {
@@ -93,7 +95,7 @@ class BinManager {
         ])
     }
 
-    create(code, options = { description: "", title: "", languageId: ""}) {
+    create(code, options = { description: "", title: "", languageId: "", filename: ""}) {
         if(!code) return Promise.reject("Please specify a code")
         let languageChecker = undefined
         if(typeof options?.languageId === "string") {
@@ -119,6 +121,7 @@ class BinManager {
                     title: title,
                     description: description,
                     files: [{
+                        name: !options?.filename ? "" : options.filename,
                         content: file,
                         languageId: language
                     }]
