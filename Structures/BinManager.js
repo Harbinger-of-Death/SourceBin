@@ -4,15 +4,11 @@ let Code = require("./Code.js")
 let collection = new (require("../@Collections/Collection/childrenCache").RaidenCol)
 let fs = require("fs")
 class BinManager {
-    constructor(access, refresh) {
+    constructor(access) {
         /**
          * @private
          */
         this.constructor.ACCESS = access
-        /**
-         * @private
-         */
-        this.constructor.REFRESH = refresh
     }
     fetch(id) {
         if(!id) return Promise.reject("Please specify an ID")
@@ -65,7 +61,7 @@ class BinManager {
             fetch(`https://sourceb.in/api/user/bins`, {
                 method: "GET",
                 headers: {
-                    "cookie": `access_token=${this.constructor.ACCESS}; refresh_token=${this.constructor.REFRESH}`
+                    "cookie": `access_token=${this.constructor.ACCESS}`
                 }
             }).then(res => {
                 if(res.status !== 200) return Promise.reject(`Error. Status: ${res.status} (${res.statusText})`)
@@ -85,11 +81,9 @@ class BinManager {
                         })
                     }
                     for(let bins of data) {
-                        this.fetch(bins["key"]).then(code => {
-                            collection.set(bins["key"], code)
-                        })
+                        collection.set(bins["key"], await this.fetch(bins["key"]))
                     }
-                    resolve(collection)
+                    return resolve(collection)
                 })
             })
         ])
@@ -148,7 +142,7 @@ class BinManager {
             fetch(`https://sourceb.in/api/bins/${key}`, {
                 method: "DELETE",
                 headers: {
-                    "cookie": `access_token=${this.constructor.ACCESS}; refresh_token=${this.constructor.REFRESH}`
+                    "cookie": `access_token=${this.constructor.ACCESS}`
                 }
             }).then(res => {
                 if(res.status !== 200) return rej(`Error. Status: ${res.status} (${res.statusText})`)

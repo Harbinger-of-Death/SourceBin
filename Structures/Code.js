@@ -2,16 +2,11 @@ let fetch = require("node-fetch")
 class Code {
     constructor(data, id, token = {
         accessToken: "",
-        refreshToken: ""
     }) {
         /**
          * @private
          */
         this.constructor.ACCESS = token.accessToken
-        /**
-         * @private
-         */
-        this.constructor.REFRESH = token.refreshToken
         /**
          * @private
          */
@@ -122,7 +117,7 @@ class Code {
             fetch(`https://sourceb.in/api/bins/${this._id}`, {
                 method: "DELETE",
                 headers: {
-                    "cookie": `access_token=${this.constructor.ACCESS}; refresh_token=${this.constructor.REFRESH}`
+                    "cookie": `access_token=${this.constructor.ACCESS}`
                 }
             }).then(res => {
                 if(res.status !== 200) return Promise.reject(`Error. Status: ${res.status}`)
