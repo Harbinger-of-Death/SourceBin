@@ -97,19 +97,23 @@ class BinManager {
 
     create(code, options = { description: "", title: "", languageId: "", filename: ""}) {
         if(!code) return Promise.reject("Please specify a code")
+        if(/^..?\//gim.test(code)) {
+            if(fs.statSync(code).isDirectory()) return Promise.reject("Please specify a file not just a directory")
+            if([".png", ".jpg", ".jpeg"].some(value => code.endsWith(value))) return Promise.reject("That's an image")
+        }
         let languageChecker = undefined
-        if(typeof options?.languageId === "string") {
+        if(typeof options?.languageId === "string" && options?.languageId) {
             languageChecker = Object.keys(this.constructor.LANGUAGE).filter(value => value === options?.languageId)
             if(languageChecker?.length <= 0) return Promise.reject(`Invalid Language, or does not exist`)
         }
-        if(typeof options?.languageId === "number") {
+        if(typeof options?.languageId === "number" && options?.languageId) {
             let values = Object.values(this.constructor.LANGUAGE).filter(value => value === options?.languageId)
             if(values?.length <= 0) return Promise.reject("Invalid Language, or does not exist")
         }
         let description = options?.description ?? ""
         let title = options?.title ?? ""
         let language = options?.languageId ? (this.constructor.LANGUAGE[languageChecker?.[0]] ?? options?.languageId) : 372
-        let file = /^.\//gim.test(code) ? fs.readFileSync(code)?.toString() : code
+        let file = /^..?\//gim.test(code) ? fs.readFileSync(code)?.toString() : code
         if(!file) return Promise.reject("No code specified")
         return new Promise((resolve, rej) => {
             fetch(`https://sourceb.in/api/bins`, {
@@ -165,7 +169,9 @@ BinManager.LANGUAGE = {
     "C++": 43,
     PYTHON: 303,
     JAVASCRIPT: 183,
-    TEXT: 372
+    TEXT: 372,
+    TYPESCRIPT: 378,
+    GO: 132
 }
 
 exports["default"] = BinManager

@@ -12,7 +12,7 @@ interface Options {
     /**
      * The language id for this bin
      */
-    languageId: number | "1C Enterprise" | "4D" | "ACTIONSCRIPT" | "ASSEMBLY" | "C#" | "C++" | "PYTHON" | "JAVASCRIPT" | "TEXT"
+    languageId: number | "1C Enterprise" | "4D" | "ACTIONSCRIPT" | "ASSEMBLY" | "C#" | "C++" | "PYTHON" | "JAVASCRIPT" | "TEXT" | "TYPESCRIPT" | "GO"
     /**
      * The filename for this bin
      */
